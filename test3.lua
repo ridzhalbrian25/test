@@ -174,7 +174,7 @@ local function OnEventFired(...)
     
     -- 2. Calculate Rarity
     if itemData.Probability and itemData.Probability.Chance then
-        local tierInfo = TierUtility:GetTierFromRarity(probability.Chance)
+        local tierInfo = TierUtility:GetTierFromRarity(itemData.Probability.Chance)
         
         if tierInfo then
             -- tierInfo usually contains {Name = "Legendary", TierColor = ...}
