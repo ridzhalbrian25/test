@@ -247,6 +247,7 @@ local function scanItemForRarity(item)
 end
 
 local function onItemAdded(item)
+    print(item)
     if item:IsA("Tool") then
         task.wait(0.5) 
         local rarity = scanItemForRarity(item)
