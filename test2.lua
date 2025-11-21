@@ -154,3 +154,4 @@ CloseBtn.MouseButton1Click:Connect(function()
 end)
 
 Log("Diagnostic Started. Catch a fish now...", Color3.fromRGB(0, 255, 0))
+
