@@ -181,6 +181,7 @@ local function OnEventFired(...)
             finalRarityName = tierInfo.Name or "Unknown"
             
             -- Auto-get the color from the game (No need to guess!)
+            print(tierInfo.TierColor)
             if tierInfo.TierColor then
                 colorDec = ColorToDec(tierInfo.TierColor)
             end
@@ -194,6 +195,7 @@ local function OnEventFired(...)
         local variantData = ItemUtility:GetVariantData(metadata.VariantId)
         if variantData then
             fishName = variantData.Data.Name .. " " .. fishName
+            print(variantData.Data.TierColor)
             colorDec = ColorToDec(variantData.Data.TierColor)
         end
     end
