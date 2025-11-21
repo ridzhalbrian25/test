@@ -1,73 +1,95 @@
 --[[
-    FISH IT! - NETWORK INTERCEPTOR (DIAGNOSTIC)
+    VARIABLE HUNTER
     Author: Gemini
     
-    This script hooks into the game engine to spy on "RemoteFunctions".
-    It prints what the server sends back to you (The Fish).
+    Scans: LocalPlayer (Attributes, Children, Descendants)
+    Target: Finds hidden stats like Luck, Mutation, etc.
 ]]
 
-local RS = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
 
--- Check if your executor supports hooking
-if not getgenv or not hookmetatable then
-    return warn("❌ Your executor does not support 'hookmetatable'. You cannot spy on this game.")
+-- [CONFIGURATION] Keywords to highlight in the log
+local Keywords = {
+    "Luck",
+    "Chance",
+    "Mutation",
+    "Rate",
+    "Percent",
+    "Multi",
+    "Stat"
+}
+
+print("---------------------------------------------")
+print("🔍 STARTING VARIABLE SCAN FOR: " .. Player.Name)
+print("---------------------------------------------")
+
+-- Helper function to check keywords
+local function isImportant(name)
+    for _, key in pairs(Keywords) do
+        if string.find(string.lower(name), string.lower(key)) then
+            return true
+        end
+    end
+    return false
 end
 
-local Client = Players.LocalPlayer
-local OldNamecall = nil
+-- 1. SCAN ATTRIBUTES (Modern games use this most)
+print("\n[1] SCANNING ATTRIBUTES:")
+local attrs = Player:GetAttributes()
+local foundAttr = false
 
-print("---------------------------------------------")
-print("🕵️ NETWORK INTERCEPTOR ACTIVE")
-print("Catch a fish now and watch the console (F9)!")
-print("---------------------------------------------")
+for name, val in pairs(attrs) do
+    foundAttr = true
+    if isImportant(name) then
+        warn(">>> 💎 FOUND ATTRIBUTE: " .. name .. " = " .. tostring(val))
+    else
+        print("    [Attr] " .. name .. ": " .. tostring(val))
+    end
+end
+if not foundAttr then print("    No Attributes found on Player.") end
 
--- The Hook
-local mt = getrawmetatable(game)
-if setreadonly then setreadonly(mt, false) end
+-- 2. SCAN VALUE OBJECTS (IntValues, NumberValues inside folders)
+print("\n[2] SCANNING FOLDERS & VALUES:")
 
-OldNamecall = hookmetatable(game, newcclosure(function(Self, ...)
-    local Method = getnamecallmethod()
-    local Args = {...}
-
-    -- We only care about interactions with the Server
-    if Method == "InvokeServer" or Method == "FireServer" then
-        
-        -- FILTER: Ignore movement/animation spam to keep logs clean
-        if tostring(Self) ~= "Badge" and not tostring(Self):find("Move") and not tostring(Self):find("Anim") then
+local function deepScan(parent, depth)
+    if depth > 3 then return end -- Prevent crashing on deep folders
+    
+    for _, child in pairs(parent:GetChildren()) do
+        -- We are looking for containers (Folders, Configurations) or Values
+        if child:IsA("Folder") or child:IsA("Configuration") or child:IsA("Model") then
+            print(string.rep("  ", depth) .. "📂 " .. child.Name)
+            deepScan(child, depth + 1)
             
-            -- 1. Log what we SENT to the server
-            print("📤 [OUTGOING] " .. tostring(Self.Name) .. " ("..Self.ClassName..")")
-            
-            -- 2. If it is a Function, wait for the REPLY (The Fish)
-            if Method == "InvokeServer" then
-                task.spawn(function()
-                    -- We run the original function to get the result
-                    local Result = OldNamecall(Self, unpack(Args))
-                    
-                    print("✅ [RETURN DATA] from " .. tostring(Self.Name))
-                    
-                    -- Print the data the server gave back
-                    if type(Result) == "table" then
-                        for k, v in pairs(Result) do
-                            print("   [Key]: " .. tostring(k) .. " = [Value]: " .. tostring(v))
-                            -- Deep print for nested tables (common in fish stats)
-                            if type(v) == "table" then
-                                for k2, v2 in pairs(v) do
-                                    print("      -> " .. tostring(k2) .. ": " .. tostring(v2))
-                                end
-                            end
-                        end
-                    else
-                        print("   [Value]: " .. tostring(Result))
-                    end
-                    print("---------------------------------------------")
-                end)
+        elseif child:IsA("ValueBase") then -- IntValue, StringValue, BoolValue, etc.
+            local val = child.Value
+            if isImportant(child.Name) then
+                warn(string.rep("  ", depth) .. ">>> 💎 FOUND VALUE: " .. child.Name .. " = " .. tostring(val))
+            else
+                print(string.rep("  ", depth) .. "    ["..child.ClassName.."] " .. child.Name .. ": " .. tostring(val))
             end
         end
     end
+end
 
-    return OldNamecall(Self, ...)
-end))
+deepScan(Player, 1)
 
-if setreadonly then setreadonly(mt, true) end
+-- 3. SCAN PLAYERGUI (Sometimes stats are hidden in UI attributes)
+print("\n[3] SCANNING GUI ATTRIBUTES (Brief):")
+local PlayerGui = Player:FindFirstChild("PlayerGui")
+if PlayerGui then
+    for _, gui in pairs(PlayerGui:GetChildren()) do
+        if gui:IsA("ScreenGui") then
+            local gAttrs = gui:GetAttributes()
+            for name, val in pairs(gAttrs) do
+                if isImportant(name) then
+                    warn(">>> 💎 FOUND GUI ATTRIBUTE ("..gui.Name.."): " .. name .. " = " .. tostring(val))
+                end
+            end
+        end
+    end
+end
+
+print("---------------------------------------------")
+print("✅ SCAN COMPLETE")
+print("---------------------------------------------")
