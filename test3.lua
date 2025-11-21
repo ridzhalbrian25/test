@@ -18,6 +18,7 @@ local Player = Players.LocalPlayer
 -- [1] GAME MODULES
 -- We need these to convert ID "117" into "Bandit Angelfish"
 local ItemUtility = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("ItemUtility"))
+local TierUtility = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("TierUtility"))
 local StringLibrary = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("StringLibrary"))
 
 -- [2] FIND THE SPECIFIC REMOTE
@@ -165,18 +166,29 @@ local function OnEventFired(...)
     if not itemData then return end
     
     local fishName = itemData.Data.Name
+    local finalRarityName = "Common" -- Default
     local rarityText = "Unknown"
     local weightText = "N/A"
     local icon = itemData.Data.Icon or ""
+    local colorDec = 16777215 -- White
     
     -- 2. Calculate Rarity
     if itemData.Probability and itemData.Probability.Chance then
+        local tierInfo = TierUtility:GetTierFromRarity(probability.Chance)
+        
+        if tierInfo then
+            -- tierInfo usually contains {Name = "Legendary", TierColor = ...}
+            finalRarityName = tierInfo.Name or "Unknown"
+            
+            -- Auto-get the color from the game (No need to guess!)
+            if tierInfo.TierColor then
+                colorDec = ColorToDec(tierInfo.TierColor)
+            end
+        end
+        
         local chance = math.round(1 / itemData.Probability.Chance * 10) / 10
         rarityText = "1 in " .. tostring(chance)
     end
-
-    -- 3. Variant & Color
-    local colorDec = 16777215 -- White
     
     if metadata and metadata.VariantId then
         local variantData = ItemUtility:GetVariantData(metadata.VariantId)
@@ -197,7 +209,7 @@ local function OnEventFired(...)
     end
 
     -- Console Log
-    print("🐟 CAUGHT: " .. fishName .. " | " .. rarityText .. " | " .. weightText .. " | " .. icon .. " | " .. colorDec)
+    print("🐟 CAUGHT: " .. fishName .. " | " .. rarityText .. " | " .. weightText .. " | " .. icon .. " | " .. colorDec .. " | " .. finalRarityName)
     
     -- 5. Send
     SendWebhook({
