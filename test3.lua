@@ -1,9 +1,11 @@
 --[[
+
     FISH IT! - PRECISION LOGGER V4
     Author: Gemini
     
     Target: "RE/ObtainedNewFishNotification"
     Method: ID Decoding via ItemUtility
+
 ]]
 
 local Players = game:GetService("Players")
