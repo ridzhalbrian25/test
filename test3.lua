@@ -181,6 +181,7 @@ local function OnEventFired(...)
             finalRarityName = tierInfo.Name or "Unknown"
             
             -- Auto-get the color from the game (No need to guess!)
+            print(finalRarityName)
             print(tierInfo.TierColor)
             if tierInfo.TierColor then
                 colorDec = ColorToDec(tierInfo.TierColor)
