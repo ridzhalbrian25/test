@@ -131,8 +131,28 @@ Style(OpenBtn, Color3.fromRGB(0,150,255))
 
 -- [5] LOGIC
 
-local function ColorToDec(c)
-    return math.floor(c.R*255)*65536 + math.floor(c.G*255)*256 + math.floor(c.B*255)
+-- local function ColorToDec(c)
+--     return math.floor(c.R*255)*65536 + math.floor(c.G*255)*256 + math.floor(c.B*255)
+-- end
+
+-- [HELPER FUNCTION: COLOR EXTRACTOR]
+local function ColorToDec(colorInput)
+    local finalColor = Color3.new(1, 1, 1) -- Default White
+
+    -- Case A: It is a ColorSequence (Gradient)
+    if typeof(colorInput) == "ColorSequence" then
+        -- Grab the color of the first keypoint
+        if #colorInput.Keypoints > 0 then
+            finalColor = colorInput.Keypoints[1].Value
+        end
+        
+    -- Case B: It is already a simple Color3
+    elseif typeof(colorInput) == "Color3" then
+        finalColor = colorInput
+    end
+
+    -- Convert Color3 to Decimal for Discord
+    return math.floor(finalColor.R * 255) * 65536 + math.floor(finalColor.G * 255) * 256 + math.floor(finalColor.B * 255)
 end
 
 local function SendWebhook(embed)
