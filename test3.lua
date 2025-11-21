@@ -204,7 +204,6 @@ local function OnEventFired(...)
         ["title"] = "🎣 Catch Detected!",
         ["description"] = "**Fish:** " .. fishName .. "\n**Rarity:** " .. rarityText .. "\n**Weight:** " .. weightText,
         ["color"] = colorDec,
-        ["thumbnail"] = { ["url"] = icon },
         ["footer"] = { ["text"] = "Fish It! Logger | " .. Player.Name },
         ["timestamp"] = DateTime.now():ToIsoDate()
     })
