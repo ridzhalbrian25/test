@@ -106,6 +106,7 @@ local function sendToDiscord(fishText, rarityFound)
     local embedColor = 10181046 -- Default Purple
     if string.find(rarityFound, "Legendary") then embedColor = 16766720 end -- Gold
     if string.find(rarityFound, "Mythical") then embedColor = 15158332 end -- Red
+    if string.find(rarityFound, "Secret") then embedColor = 4251856 end -- Tosca/Turquoise
     
     local payload = {
         ["content"] = "Some lucky catch!", -- Optional ping message
