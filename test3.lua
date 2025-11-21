@@ -195,7 +195,7 @@ local function OnEventFired(...)
     end
 
     -- Console Log
-    print("🐟 CAUGHT: " .. fishName .. " | " .. rarityText .. " | " .. weightText .. " | " .. icon .. " | " ... colorDec)
+    print("🐟 CAUGHT: " .. fishName .. " | " .. rarityText .. " | " .. weightText)
     
     -- 5. Send
     SendWebhook({
