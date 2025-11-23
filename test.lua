@@ -82,8 +82,8 @@ local function HookRemote(remote)
         
         -- Check if this event looks like a fish catch
         if IsFishData(args) then
-            print("✅ MATCH FOUND: " .. remote:GetFullName())
-            SendWebhook(remote.Name, args)
+            -- print("✅ MATCH FOUND: " .. remote:GetFullName())
+            -- SendWebhook(remote.Name, args)
         end
     end)
 end
