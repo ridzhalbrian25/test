@@ -201,14 +201,17 @@ local function OnEventFired(...)
             finalRarityName = tierInfo.Name or "Unknown"
             
             -- Auto-get the color from the game (No need to guess!)
-            print(finalRarityName)
-            print(tierInfo.TierColor)
             if tierInfo.TierColor then
                 colorDec = ColorToDec(tierInfo.TierColor)
             end
         end
         
         local chance = math.round(1 / itemData.Probability.Chance * 10) / 10
+
+        if chance <= 1000 then
+            return
+        end
+        
         rarityText = "1 in " .. tostring(chance)
     end
     
@@ -216,7 +219,6 @@ local function OnEventFired(...)
         local variantData = ItemUtility:GetVariantData(metadata.VariantId)
         if variantData then
             fishName = variantData.Data.Name .. " " .. fishName
-            print(variantData.Data.TierColor)
             colorDec = ColorToDec(variantData.Data.TierColor)
         end
     end
@@ -236,8 +238,8 @@ local function OnEventFired(...)
     
     -- 5. Send
     SendWebhook({
-        ["title"] = "🎣 Catch Detected!",
-        ["description"] = "**Fish:** " .. fishName .. "\n**Rarity:** " .. rarityText .. "\n**Weight:** " .. weightText,
+        ["title"] = "🎣 FISH CAUGHT!",
+        ["description"] = "*FISH INFO*\n" .. "**Fish:** " .. fishName .. "\n**Rarity:** " .. rarityText .. "\n**Weight:** " .. weightText .. "\n**Rarity:** " .. finalRarityName,
         ["color"] = colorDec,
         ["footer"] = { ["text"] = "Fish It! Logger | " .. Player.Name },
         ["timestamp"] = DateTime.now():ToIsoDate()
